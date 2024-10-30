@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Location Sharing</title>
+  <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        // Continuously watch the location
+        navigator.geolocation.watchPosition(showPosition, showError);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+
+    function showPosition(position) {
+      // Get current latitude and longitude
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+      
+      // Display location or send to server
+      document.getElementById("location").innerHTML = "Latitude: " + latitude +
+      "<br>Longitude: " + longitude;
+      
+      // Send location to Google Sheets or backend server
+      sendLocationToServer(latitude, longitude);
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("User denied the request for Geolocation.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Location information is unavailable.");
+          break;
+        case error.TIMEOUT:
+          alert("The request to get user location timed out.");
+          break;
+        case error.UNKNOWN_ERROR:
+          alert("An unknown error occurred.");
+          break;
+      }
+    }
+
+    function sendLocationToServer(lat, lng) {
+      // Use Google Apps Script web app URL or backend server URL
+      var url = "https://your-google-apps-script-url-or-server.com";
+      var data = {
+        latitude: lat,
+        longitude: lng
+      };
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Location sent successfully:', data);
+      })
+      .catch((error) => {
+        console.error('Error sending location:', error);
+      });
+    }
+  </script>
+</head>
+<body onload="getLocation()">
+  <h1>Driver Live Location Sharing</h1>
+  <p id="location">Fetching location...</p>
+</body>
+</html>
